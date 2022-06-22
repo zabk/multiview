@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="multiview.View.OrderListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewmodels="clr-namespace:multiview.ViewModel" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1500"
+             Background="White">
+    <StackPanel x:Name="mainpanel">
+        <StackPanel.DataContext>
+            <viewmodels:OrderListViewModel/>
+        </StackPanel.DataContext>
+        <StackPanel.Resources>
+            <Style TargetType="{x:Type ListView}">
+                <Setter Property="Margin" Value="5"/>
+            </Style>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Margin" Value="5 0 5 0"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
+        </StackPanel.Resources>
+        <ListView x:Name="orderList" ItemsSource="{Binding Orders, UpdateSourceTrigger=PropertyChanged}" MaxHeight="300">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction 
+                        Command="{Binding UpdateOrderDetails}"
+                        CommandParameter="{Binding ElementName=orderList, Path=SelectedItem}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            <ListView.View >
+                <GridView x:Name="Ordergrid" >
+                    <GridViewColumn Header="Order Id" DisplayMemberBinding="{Binding Id}" Width="250"/>
+                    <GridViewColumn Header="Serial" DisplayMemberBinding="{Binding Serial}" Width="50"/>
+                    <GridViewColumn Header="Order Date" DisplayMemberBinding="{Binding OrderDate}" Width="150"/>
+                    <GridViewColumn Header="Satus" DisplayMemberBinding="{Binding Status}" Width="100"/>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="150"/>
+                    <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" Width="150"/>
+                    <GridViewColumn Header="Order value" DisplayMemberBinding="{Binding OrderValue}" Width="100"/>
+                    <GridViewColumn Header="Product count" DisplayMemberBinding="{Binding ProductCount}" Width="100"/>
+                    <GridViewColumn Header="Process" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Process this item" CommandParameter="{Binding Id}"
+                                        Visibility="{Binding Processable, Converter={StaticResource BoolToVis}}"
+                                        Command="{Binding DataContext.ProcessCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}"
+                                         />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+            
+        </ListView>
+        <StackPanel Orientation="Horizontal">
+            <!--<Label Content="{Binding PageNumberText}"/>-->
+            
+            <Button Content="First page" Command="{Binding FirstPage}" IsEnabled="{Binding IsPrevPageAvailable}"/>
+            <Button Content="Prev page" Command="{Binding PrevPage}" IsEnabled="{Binding IsPrevPageAvailable}"/>
+            <Label Content="{Binding CurrentPage}"/>
+            <Label Content="/"/>
+            <Label Content="{Binding PageCount}"/>
+            <Button Content="Next page" Command="{Binding NextPage}" IsEnabled="{Binding IsNextPageAvailable}"/>
+            <Button Content="Last page" Command="{Binding LastPage}" IsEnabled="{Binding IsNextPageAvailable}"/>
+            
+        </StackPanel>
+    </StackPanel>
+</UserControl>
